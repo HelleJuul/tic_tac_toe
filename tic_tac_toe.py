@@ -1,19 +1,12 @@
-board = input("Enter cells: ")
 
-board_as_list = list(board)
-
-def print_board(board_as_list):
+def print_board(board):
     """Prints the game board given a list of game markers"""
     
-    for pos, cell in enumerate(board_as_list):
-        if cell == "_":
-            board_as_list[pos] = " " 
-
     border = "-"*9
 
-    line_1 = f"| {board_as_list[0]} {board_as_list[1]} {board_as_list[2]} |"
-    line_2 = f"| {board_as_list[3]} {board_as_list[4]} {board_as_list[5]} |"
-    line_3 = f"| {board_as_list[6]} {board_as_list[7]} {board_as_list[8]} |"
+    line_1 = f"| {board[0]} {board[1]} {board[2]} |"
+    line_2 = f"| {board[3]} {board[4]} {board[5]} |"
+    line_3 = f"| {board[6]} {board[7]} {board[8]} |"
 
     print(border)
     print(line_1)
@@ -22,54 +15,44 @@ def print_board(board_as_list):
     print(border)
 
 
-def check_three_in_row(marker,board_as_list):
-    """Checks if there are three in a row."""
+def check_three_in_row(marker,board):
+    """
+    Returns True, if there are three in a row for a given marker.
+    
+    The form of the board is:
+        0 1 2
+        3 4 5
+        6 7 8
+    
+    """
 
     # Check the first row
-    if (board_as_list[0] == marker) and (board_as_list[1] == marker) and (board_as_list[2] == marker):
+    if (board[0] == marker) and (board[1] == marker) and (board[2] == marker):
         return True
     # Check the second row
-    elif (board_as_list[3] == marker) and (board_as_list[4] == marker) and (board_as_list[5] == marker):
+    elif (board[3] == marker) and (board[4] == marker) and (board[5] == marker):
         return True
     # Check the third row
-    elif (board_as_list[6] == marker) and (board_as_list[7] == marker) and (board_as_list[8] == marker):
+    elif (board[6] == marker) and (board[7] == marker) and (board[8] == marker):
         return True
     # Check the first column
-    elif (board_as_list[0] == marker) and (board_as_list[3] == marker) and (board_as_list[6] == marker):
+    elif (board[0] == marker) and (board[3] == marker) and (board[6] == marker):
         return True
     # Check the second column
-    elif (board_as_list[1] == marker) and (board_as_list[4] == marker) and (board_as_list[7] == marker):
+    elif (board[1] == marker) and (board[4] == marker) and (board[7] == marker):
         return True
     # Check the third column
-    elif (board_as_list[2] == marker) and (board_as_list[5] == marker) and (board_as_list[8] == marker):
+    elif (board[2] == marker) and (board[5] == marker) and (board[8] == marker):
         return True
     # Check acros from top left corner to lower right corner
-    elif (board_as_list[0] == marker) and (board_as_list[4] == marker) and (board_as_list[8] == marker):
+    elif (board[0] == marker) and (board[4] == marker) and (board[8] == marker):
         return True
     # Check acros from top right corner to lower left corner
-    elif (board_as_list[2] == marker) and (board_as_list[4] == marker) and (board_as_list[6] == marker):
+    elif (board[2] == marker) and (board[4] == marker) and (board[6] == marker):
         return True
     else:
         return False
 
-def print_status(board_as_list):
-    if check_three_in_row("X", board_as_list) and check_three_in_row("O", board_as_list):
-        print("Impossible")
-
-    elif ((board_as_list.count("X") - board_as_list.count("O")) >= 2) or ((board_as_list.count("X") - board_as_list.count("O")) <= -2):
-        print("Impossible")
-
-    elif check_three_in_row("X", board_as_list):
-        print("X wins")
-
-    elif check_three_in_row("O", board_as_list):
-        print("O wins")
-
-    elif "_" in board_as_list:
-        print("Game not finished")
-
-    else:
-        print("Draw")
 
 
 def index_of_move(move):
@@ -120,30 +103,71 @@ def invalid(move):
     except ValueError:
         return True
 
-def make_move(move, board_as_list):
-    """Changes the board."""
+def make_move(move, board, marker):
+    """Makes """
     index = index_of_move(move)
-    board_as_list[index] = "X"
+    board[index] = marker
 
 
+board = [" "]*9
+
+number_of_moves = 0
 
 running = True
-
-print_board(board_as_list)
+    
+print_board(board)
 
 while running:
 
-    move = input("Enter the coordinates: ")
-
-    if invalid(move):
-        print("You should enter numbers!")
-    elif out_of_range(move):
-        print("Coordinates should be from 1 to 3!")
-    elif occupied(move, board_as_list):
-        print("This cell is occupied! Choose another one!")
-    else:
-        make_move(move, board_as_list)
-        print_board(board_as_list)
+    if check_three_in_row("X", board):
+        print("X wins")
         running = False
+    elif check_three_in_row("O", board):
+        print("O wins")
+        running = False
+    elif " " not in board:
+        print("Draw")
+        running = False
+    else:
+        
+        if number_of_moves % 2 == 0:
+            marker = "X"
+            making_move = True
 
+            while making_move:
 
+                move = input("Enter the coordinates: ")
+
+                if invalid(move):
+                    print("You should enter numbers!")
+                elif out_of_range(move):
+                    print("Coordinates should be from 1 to 3!")
+                elif occupied(move, board):
+                    print("This cell is occupied! Choose another one!")
+                else:
+                    make_move(move, board, marker)
+                    print_board(board)
+                    making_move = False
+
+            number_of_moves += 1
+
+        else:
+            marker = "O"
+            making_move = True
+
+            while making_move:
+
+                move = input("Enter the coordinates: ")
+
+                if invalid(move):
+                    print("You should enter numbers!")
+                elif out_of_range(move):
+                    print("Coordinates should be from 1 to 3!")
+                elif occupied(move, board):
+                    print("This cell is occupied! Choose another one!")
+                else:
+                    make_move(move, board, marker)
+                    print_board(board)
+                    making_move = False
+
+            number_of_moves += 1
